@@ -1,6 +1,6 @@
 import React from "react";
-import { ListItem } from "../List";
-import { Row, Col } from "../Grid";
+import { ListItem } from "../From";
+import { Row, Col } from "../Footer";
 import "./style.css";
 
 function Book({ title, subtitle, authors, link, description, image, Button }) {

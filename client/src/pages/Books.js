@@ -1,67 +1,89 @@
-import React, { useState, useEffect } from "react";
+import React, { Component} from "react";
 import Jumbotron from "../components/Jumbotron";
 import API from "../utils/API";
 import DeleteBtn from "../components/DeleteBtn";
 import { Col, Row, Container } from "../components/Grid";
 import { List, ListItem } from "../components/List";
-import { Input, TextArea, FormBtn } from "../components/Form";
+import Form from "../components/Form";
+import Book from '../components/Book.js';
 
-const Books = () => {
-  const [books, setBooks] = setState([]);
+class Books extends Component{
+ state = {
+   books:[],
+   q: "",
+   message: "Search for the BOOk"
+ }
+ handleInputChange = event => {
+   const {name, value} = event.target;
+   this.setState({
+     [name]: value
+   })
+ }
+ 
+ handleFormSubmit = event => {
+   event.preventDefault();
+   this.loadBooks();
+ }
 
-  useEffect(() => {
-    loadBooks();
-  }, []);
-
-  const loadBooks = async () => {
-    try {
-      const response = await API.getBooks();
-      setBooks(response.data);
-    } catch(error) {
-      console.group("LOAD BOOKS");
-      console.log(err);
-      console.groupEnd();
-    }
+  loadBooks = () => {
+    
+      API.getBooks(this.state.q).then(res => 
+          this.setState({
+            books:res.data
+          })
+        )
   };
-
+  handleBookSave = (id) => {
+    const matchedBook = this.state.books.find(book => book.id == id);
+    API.saveBook({
+      
+    })
+  }
+render(){
   return (
-    <Container fluid>
+    <Container>
       <Row>
-        <Col size="md-6">
+        <Col size="md-12">
           <Jumbotron>
             <h1>What Books Should I Read?</h1>
           </Jumbotron>
-          <form>
-            <Input name="title" placeholder="Title (required)" />
-            <Input name="author" placeholder="Author (required)" />
-            <TextArea name="synopsis" placeholder="Synopsis (Optional)" />
-            <FormBtn>Submit Book</FormBtn>
-          </form>
+          
         </Col>
-        <Col size="md-6 sm-12">
-          <Jumbotron>
-            <h1>Books On My List</h1>
-          </Jumbotron>
-          {books.length ? (
-            <List>
-              {books.map(book => (
-                <ListItem key={book._id}>
-                  <a href={"/books/" + book._id}>
-                    <strong>
-                      {book.title} by {book.author}
-                    </strong>
-                  </a>
-                  <DeleteBtn />
-                </ListItem>
-              ))}
-            </List>
-          ) : (
-            <h3>No Results to Display</h3>
-          )}
+        <Col size="md-12">
+          <Form
+            handleInputChange={this.handleInputChange}
+            handleFormSubmit= {this.handleFormSubmit}
+            q={this.StaticRange.q}
+          />
         </Col>
       </Row>
+      <Row>
+        <Col size="md-6 sm-12">
+            <Jumbotron>
+              <h1>Books On My List</h1>
+            </Jumbotron>
+            {this.state.books.length ? (
+              <List>
+                {this.state.books.map(book => (
+                  <Book key={book.id} 
+                    title={book.volumeInfo.tittle}
+                    authors ={book.volumeInfo.authors}
+                    description = {book.volumeInfo.description}
+                    Button = {() => (
+                      <button onClick={()=> this.handleBookSave(book.id)}>Save</button>
+                    )}
+                  />
+                ))}
+              </List>
+            ) : (
+              <h3>No Results to Display</h3>
+            )}
+          </Col>
+        </Row>
+    
     </Container>
   );
+}
 }
 
 export default Books;
