@@ -1,9 +1,11 @@
 const router = require("express").Router();
 const booksController = require("../../controllers/booksController");
+const googleController = require("../../controllers/googleController");
 
 // Matches with "/api/books"
-router.route("/")
-  .get(booksController.findAll)
+router
+  .route("/")
+  .get(googleController.findAll)
   .post(booksController.create);
 
 // Matches with "/api/books/:id"
